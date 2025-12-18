@@ -4,3 +4,4 @@ mkdir obj
 ..\lib\gbdk\bin\lcc   -c -o obj\dungeon_map.o res\dungeon_map.c
 ..\lib\gbdk\bin\lcc   -c -o obj\dungeon_tiles.o res\dungeon_tiles.c
 ..\lib\gbdk\bin\lcc   -o obj\gb1.gb obj\main.o obj\dungeon_map.o obj\dungeon_tiles.o 
+..\lib\bgbw64\bgb64.exe obj\gb1.gb
