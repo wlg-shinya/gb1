@@ -6,7 +6,7 @@
 # If you move this project you can change the directory 
 # to match your GBDK root directory (ex: GBDK_HOME = "C:/GBDK/"
 ifndef GBDK_HOME
-	GBDK_HOME = ../../../
+	GBDK_HOME = ../lib/gbdk/
 endif
 
 LCC = $(GBDK_HOME)bin/lcc 
@@ -18,7 +18,7 @@ endif
 
 
 # You can set the name of the .gb ROM file here
-PROJECTNAME    = Example
+PROJECTNAME    = gb1
 
 SRCDIR      = src
 OBJDIR      = obj
@@ -32,7 +32,7 @@ all:	prepare $(BINS)
 
 compile.bat: Makefile
 	@echo "REM Automatically generated from Makefile" > compile.bat
-	@make -sn | sed y/\\//\\\\/ | sed s/mkdir\ -p\/mkdir\/ | grep -v make >> compile.bat
+	@make -sn | sed 's|/|\\\\|g' | sed 's|mkdir -p|mkdir|g' | grep -v make >> compile.bat
 
 # Compile .c files in "src/" to .o object files
 $(OBJDIR)/%.o:	$(SRCDIR)/%.c
@@ -60,5 +60,5 @@ prepare:
 
 clean:
 #	rm -f  *.gb *.ihx *.cdb *.adb *.noi *.map
-	rm -f  $(OBJDIR)/*.*
+	rm -rf  $(OBJDIR)
 
