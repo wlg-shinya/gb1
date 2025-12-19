@@ -1,5 +1,9 @@
+# エミュレータの実行環境毎に変更される設定
+lib/bgbw64/bgb.ini
+
 # ビルド成果物
 app/obj
 
-# エミュレータの実行環境毎に変更される設定
-lib/bgbw64/bgb.ini
+# パッケージ作成時に一時的に用意されるもの
+app/package/*.gb
+app/package/*.exe
