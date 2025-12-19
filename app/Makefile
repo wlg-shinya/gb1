@@ -35,19 +35,22 @@ CSOURCES = $(foreach dir,$(SRCDIR),$(notdir $(wildcard $(dir)/*.c))) $(foreach d
 ASMSOURCES = $(foreach dir,$(SRCDIR),$(notdir $(wildcard $(dir)/*.s)))
 OBJS = $(CSOURCES:%.c=$(OBJ_DIR)/%.o) $(ASMSOURCES:%.s=$(OBJ_DIR)/%.o)
 EMULATOR = $(ROOT_DIR)/$(LIB_DIR)/bgbw64/bgb64.exe
+SAMEBOY_HOME = $(ROOT_DIR)/$(LIB_DIR)/sameboy_winsdl
+CSC = C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe
 PACKAGE_DIR = package
-PACKAGE_LAUNCHER_SRC = $(PACKAGE_DIR)\Launcher.cs # Win形式パス
+PACKAGE_INTERMEDIATE_DIR = $(OUTPUT_DIR)/$(PACKAGE_DIR)_intermediate
+PACKAGE_LAUNCHER_SRC = $(PACKAGE_DIR)/Launcher.cs
+PACKAGE_CONFIG_SRC = $(PACKAGE_INTERMEDIATE_DIR)/Config.cs
+PACKAGE_SRCS = $(PACKAGE_LAUNCHER_SRC) $(PACKAGE_CONFIG_SRC)
 PACKAGE_EXE = $(OUTPUT_DIR)/$(PROJECTNAME).exe
 PACKAGE_EXE_ICON = $(PACKAGE_DIR)/icon.ico
-CSC = C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe
-SAMEBOY_HOME = $(ROOT_DIR)/$(LIB_DIR)/sameboy_winsdl
 PACKAGE_BASE_RESOURCES = \
 	/resource:$(SAMEBOY_HOME)/sameboy.exe,sameboy.exe \
 	/resource:$(SAMEBOY_HOME)/SDL2.dll,SDL2.dll \
 	/resource:$(SAMEBOY_HOME)/xaudio2_9redist.dll,xaudio2_9redist.dll \
 	/resource:$(SAMEBOY_HOME)/cgb_boot.bin,cgb_boot.bin \
 	/resource:$(SAMEBOY_HOME)/dmg_boot.bin,dmg_boot.bin \
-	/resource:$(ROM),gb1.gb
+	/resource:$(ROM),$(ROM_FILE)
 SAMEBOY_SHADER_FILES := $(wildcard $(SAMEBOY_HOME)/Shaders/*.fsh) $(wildcard $(SAMEBOY_HOME)/Shaders/*.vsh)
 PACKAGE_SHADER_RESOURCES = $(foreach f,$(SAMEBOY_SHADER_FILES),/resource:$f,Shaders.$(notdir $f))
 PACKAGE_RESOURCES = $(PACKAGE_BASE_RESOURCES) $(PACKAGE_SHADER_RESOURCES)
@@ -97,10 +100,19 @@ clean:
 # パッケージ関連ターゲット
 package: $(PACKAGE_EXE)
 
-$(PACKAGE_EXE): $(ROM) $(PACKAGE_LAUNCHER_SRC)
+$(PACKAGE_EXE): $(ROM) $(PACKAGE_SRCS)
 	$(CSC) /target:winexe \
 		/out:$(PACKAGE_EXE) \
 		/win32icon:$(PACKAGE_EXE_ICON) \
 		/reference:System.Windows.Forms.dll \
 		$(PACKAGE_RESOURCES) \
-		$(PACKAGE_LAUNCHER_SRC)
+		$(subst /,\,$(PACKAGE_SRCS))
+
+$(PACKAGE_CONFIG_SRC): Makefile | $(PACKAGE_INTERMEDIATE_DIR)
+	@echo // Automatically generated from Makefile > $(PACKAGE_CONFIG_SRC)
+	@echo class Config { >> $(PACKAGE_CONFIG_SRC)
+	@echo '    public const string AppName = "$(PROJECTNAME)";' >> $(PACKAGE_CONFIG_SRC)
+	@echo } >> $(PACKAGE_CONFIG_SRC)
+
+$(PACKAGE_INTERMEDIATE_DIR):
+	mkdir -p $(PACKAGE_INTERMEDIATE_DIR)

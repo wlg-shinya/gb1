@@ -5,31 +5,27 @@ using System.Reflection;
 
 class Launcher {
     static void Main() {
-        // ■ 設定：起動するファイル名
         string targetExe = "sameboy.exe";
-        string targetRom = "gb1.gb";
+        string targetRom = Config.AppName + ".gb";
         
         // ■ 設定：フォルダ扱いする接頭辞
         string shaderPrefix = "Shaders."; 
 
         // 一時フォルダ作成
-        string tempPath = Path.Combine(Path.GetTempPath(), "gb1_" + Guid.NewGuid().ToString("N"));
+        string tempPath = Path.Combine(Path.GetTempPath(), Config.AppName + "_" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(tempPath);
 
         try {
             Assembly assembly = Assembly.GetExecutingAssembly();
             
-            // ★重要：埋め込まれている全リソースをループで処理
             foreach (string resourceName in assembly.GetManifestResourceNames()) {
                 string fileName = resourceName;
                 string outputDir = tempPath;
 
-                // "Shaders." で始まるリソースなら、Shadersフォルダの中に配置する
+                // シェーダーフォルダの処理
                 if (resourceName.StartsWith(shaderPrefix)) {
-                    // "Shaders.Nearest.fsh" -> "Nearest.fsh"
                     fileName = resourceName.Substring(shaderPrefix.Length);
                     outputDir = Path.Combine(tempPath, "Shaders");
-                    // フォルダがなければ作る
                     if (!Directory.Exists(outputDir)) {
                         Directory.CreateDirectory(outputDir);
                     }
@@ -37,7 +33,7 @@ class Launcher {
 
                 // ファイル書き出し
                 using (Stream stream = assembly.GetManifestResourceStream(resourceName)) {
-                    if (stream == null) continue; // 読み込めないものはスキップ
+                    if (stream == null) continue;
                     string destPath = Path.Combine(outputDir, fileName);
                     using (FileStream fileStream = new FileStream(destPath, FileMode.Create)) {
                         stream.CopyTo(fileStream);
@@ -48,6 +44,7 @@ class Launcher {
             // 起動設定
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = Path.Combine(tempPath, targetExe);
+            // ROMファイル名にスペースが含まれても大丈夫なように引用符で囲む
             startInfo.Arguments = "\"" + targetRom + "\" --fullscreen";
             startInfo.WorkingDirectory = tempPath;
             startInfo.UseShellExecute = false;
@@ -58,9 +55,9 @@ class Launcher {
             }
 
         } catch (Exception e) {
-            System.Windows.Forms.MessageBox.Show("Error:\n" + e.Message);
+            // エラー時もアプリ名を表示
+            System.Windows.Forms.MessageBox.Show("Error (" + Config.AppName + "):\n" + e.Message);
         } finally {
-            // お掃除
             try {
                 if (Directory.Exists(tempPath)) Directory.Delete(tempPath, true);
             } catch { }
