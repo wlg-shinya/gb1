@@ -4,7 +4,7 @@
 - Windows
 
 ## スタートアップ
-- app/build_run.bat を実行するとロム(app/obj/gb1.gb)が作成されてエミュレータが立ち上がり実行確認できます。
+- app/build_run.bat を実行するとロム(app/output/rom/gb1.gb)が作成されてエミュレータが立ち上がり実行確認できます。
 
 ## 外部ツールやライブラリ
 
