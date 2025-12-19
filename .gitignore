@@ -2,7 +2,7 @@
 lib/bgbw64/bgb.ini
 
 # ビルド成果物
-app/obj
+app/output
 
 # パッケージ作成時に一時的に用意されるもの
 app/package/*.gb

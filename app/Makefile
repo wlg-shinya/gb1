@@ -21,16 +21,19 @@ endif
 # You can set the name of the .gb ROM file here
 PROJECTNAME = gb1
 
+SRCDIR = src
+RESDIR = res
 ROOT_DIR = ..
 LIB_DIR = lib
-SRCDIR = src
-OBJDIR = obj
-RESDIR = res
+BUILD_RUN_BAT = build_run.bat
+OUTPUT_DIR = output
+OBJ_DIR = $(OUTPUT_DIR)/obj
+ROM_DIR = $(OUTPUT_DIR)/rom
 ROM_FILE = $(PROJECTNAME).gb
-ROM = $(OBJDIR)/$(ROM_FILE)
+ROM = $(ROM_DIR)/$(ROM_FILE)
 CSOURCES = $(foreach dir,$(SRCDIR),$(notdir $(wildcard $(dir)/*.c))) $(foreach dir,$(RESDIR),$(notdir $(wildcard $(dir)/*.c)))
 ASMSOURCES = $(foreach dir,$(SRCDIR),$(notdir $(wildcard $(dir)/*.s)))
-OBJS = $(CSOURCES:%.c=$(OBJDIR)/%.o) $(ASMSOURCES:%.s=$(OBJDIR)/%.o)
+OBJS = $(CSOURCES:%.c=$(OBJ_DIR)/%.o) $(ASMSOURCES:%.s=$(OBJ_DIR)/%.o)
 EMULATOR = $(ROOT_DIR)/$(LIB_DIR)/bgbw64/bgb64.exe
 PACKAGE_DIR = package
 PACKAGE_ROM = $(PACKAGE_DIR)/$(ROM_FILE)
@@ -39,6 +42,7 @@ PACKAGE_EXE = $(PACKAGE_DIR)/$(PROJECTNAME).exe
 PACKAGE_EXE_ICON = $(PACKAGE_DIR)/icon.ico
 CSC = C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe
 
+
 all: build run
 
 build: $(ROM) 
@@ -46,39 +50,44 @@ build: $(ROM)
 run: $(ROM)
 	$(EMULATOR) $(ROM)
 
-build_run.bat: Makefile
-	@echo "REM Automatically generated from Makefile" > build_run.bat
-	@make -sn | sed 's|/|\\\\|g' | sed 's|mkdir -p|mkdir|g' | grep -v make >> build_run.bat
+$(BUILD_RUN_BAT): clean
+	@echo "REM Automatically generated from Makefile" > $(BUILD_RUN_BAT)
+	@make -sn | sed 's|/|\\\\|g' | sed 's|mkdir -p|mkdir|g' | grep -v make >> $(BUILD_RUN_BAT)
 
-$(OBJDIR):
-	mkdir -p $(OBJDIR)
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
+
+$(ROM_DIR):
+	mkdir -p $(ROM_DIR)
 
 # Compile .c files in "src/" to .o object files
-$(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)
+$(OBJ_DIR)/%.o: $(SRCDIR)/%.c | $(OBJ_DIR)
 	$(LCC) $(LCCFLAGS) -c -o $@ $<
 
 # Compile .c files in "res/" to .o object files
-$(OBJDIR)/%.o: $(RESDIR)/%.c | $(OBJDIR)
+$(OBJ_DIR)/%.o: $(RESDIR)/%.c | $(OBJ_DIR)
 	$(LCC) $(LCCFLAGS) -c -o $@ $<
 
 # Compile .s assembly files in "src/" to .o object files
-$(OBJDIR)/%.o: $(SRCDIR)/%.s | $(OBJDIR)
+$(OBJ_DIR)/%.o: $(SRCDIR)/%.s | $(OBJ_DIR)
 	$(LCC) $(LCCFLAGS) -c -o $@ $<
 
 # If needed, compile .c files in "src/" to .s assembly files
 # (not required if .c is compiled directly to .o)
-$(OBJDIR)/%.s: $(SRCDIR)/%.c | $(OBJDIR)
+$(OBJ_DIR)/%.s: $(SRCDIR)/%.c | $(OBJ_DIR)
 	$(LCC) $(LCCFLAGS) -S -o $@ $<
 
 # Link the compiled object files into a .gb ROM file
-$(ROM): $(OBJS)
+$(ROM): $(OBJS) | $(ROM_DIR)
 	$(LCC) $(LCCFLAGS) -o $(ROM) $(OBJS)
 
 clean:
-	rm -rf $(OBJDIR)
+	rm -rf $(OUTPUT_DIR)
 
 # パッケージ関連ターゲット
-package: $(PACKAGE_ROM) $(PACKAGE_LAUNCHER_SRC)
+package: $(PACKAGE_EXE)
+
+$(PACKAGE_EXE): $(PACKAGE_ROM) $(PACKAGE_LAUNCHER_SRC)
 	$(CSC) /target:winexe \
 		/out:$(PACKAGE_EXE) \
 		/win32icon:$(PACKAGE_EXE_ICON) \
@@ -87,6 +96,3 @@ package: $(PACKAGE_ROM) $(PACKAGE_LAUNCHER_SRC)
 
 $(PACKAGE_ROM): $(ROM)
 	cp $(ROM) $(PACKAGE_DIR)/$(ROM_FILE)
-
-package_clean:
-	rm -rf $(PACKAGE_ROM)
