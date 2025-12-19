@@ -45,7 +45,7 @@ class Launcher {
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = Path.Combine(tempPath, targetExe);
             // ROMファイル名にスペースが含まれても大丈夫なように引用符で囲む
-            startInfo.Arguments = "\"" + targetRom + "\" --fullscreen";
+            startInfo.Arguments = "\"" + targetRom + "\" " + Config.SameboyArg;
             startInfo.WorkingDirectory = tempPath;
             startInfo.UseShellExecute = false;
             startInfo.CreateNoWindow = true;

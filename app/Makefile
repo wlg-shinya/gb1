@@ -36,6 +36,7 @@ ASMSOURCES = $(foreach dir,$(SRCDIR),$(notdir $(wildcard $(dir)/*.s)))
 OBJS = $(CSOURCES:%.c=$(OBJ_DIR)/%.o) $(ASMSOURCES:%.s=$(OBJ_DIR)/%.o)
 EMULATOR = $(ROOT_DIR)/$(LIB_DIR)/bgbw64/bgb64.exe
 SAMEBOY_HOME = $(ROOT_DIR)/$(LIB_DIR)/sameboy_winsdl
+SAMEBOY_ARG =
 CSC = C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe
 PACKAGE_DIR = package
 PACKAGE_INTERMEDIATE_DIR = $(OUTPUT_DIR)/$(PACKAGE_DIR)_intermediate
@@ -112,6 +113,7 @@ $(PACKAGE_CONFIG_SRC): Makefile | $(PACKAGE_INTERMEDIATE_DIR)
 	@echo // Automatically generated from Makefile > $(PACKAGE_CONFIG_SRC)
 	@echo class Config { >> $(PACKAGE_CONFIG_SRC)
 	@echo '    public const string AppName = "$(PROJECTNAME)";' >> $(PACKAGE_CONFIG_SRC)
+	@echo '    public const string SameboyArg = "$(SAMEBOY_ARG)";' >> $(PACKAGE_CONFIG_SRC)
 	@echo } >> $(PACKAGE_CONFIG_SRC)
 
 $(PACKAGE_INTERMEDIATE_DIR):
