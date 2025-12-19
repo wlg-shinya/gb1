@@ -10,7 +10,7 @@ ifndef GBDK_HOME
 	GBDK_HOME = $(ROOT_DIR)/$(LIB_DIR)/gbdk/
 endif
 
-LCC = $(GBDK_HOME)bin/lcc 
+LCC = $(GBDK_HOME)bin/lcc
 
 # You can set the name of the .gb ROM file here
 PROJECTNAME = gb1
@@ -50,6 +50,12 @@ PACKAGE_BASE_RESOURCES = \
 	/resource:$(ROM),$(ROM_FILE)
 PACKAGE_SHADER_RESOURCES = $(foreach f,$(SAMEBOY_SHADER_FILES),/resource:$f,Shaders__$(notdir $f))
 PACKAGE_RESOURCES = $(PACKAGE_BASE_RESOURCES) $(PACKAGE_SHADER_RESOURCES)
+
+# コンパイル追加設定
+## GB/GBColor両対応
+LCCFLAGS += -Wm-yc
+## resディレクトリをヘッダインクルードパスとして追加
+LCCFLAGS += -Ires
 
 # ビルドターゲットごとの設定
 TARGET ?=
