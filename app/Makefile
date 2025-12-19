@@ -53,7 +53,7 @@ PACKAGE_BASE_RESOURCES = \
 	/resource:$(SAMEBOY_HOME)/dmg_boot.bin,dmg_boot.bin \
 	/resource:$(ROM),$(ROM_FILE)
 SAMEBOY_SHADER_FILES := $(wildcard $(SAMEBOY_HOME)/Shaders/*.fsh) $(wildcard $(SAMEBOY_HOME)/Shaders/*.vsh)
-PACKAGE_SHADER_RESOURCES = $(foreach f,$(SAMEBOY_SHADER_FILES),/resource:$f,Shaders.$(notdir $f))
+PACKAGE_SHADER_RESOURCES = $(foreach f,$(SAMEBOY_SHADER_FILES),/resource:$f,Shaders__$(notdir $f))
 PACKAGE_RESOURCES = $(PACKAGE_BASE_RESOURCES) $(PACKAGE_SHADER_RESOURCES)
 
 
