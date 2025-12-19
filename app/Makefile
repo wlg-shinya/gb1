@@ -12,12 +12,6 @@ endif
 
 LCC = $(GBDK_HOME)bin/lcc 
 
-# GBDK_DEBUG = ON
-ifdef GBDK_DEBUG
-	LCCFLAGS += -debug -v
-endif
-
-
 # You can set the name of the .gb ROM file here
 PROJECTNAME = gb1
 
@@ -34,9 +28,11 @@ ROM = $(ROM_DIR)/$(ROM_FILE)
 CSOURCES = $(foreach dir,$(SRCDIR),$(notdir $(wildcard $(dir)/*.c))) $(foreach dir,$(RESDIR),$(notdir $(wildcard $(dir)/*.c)))
 ASMSOURCES = $(foreach dir,$(SRCDIR),$(notdir $(wildcard $(dir)/*.s)))
 OBJS = $(CSOURCES:%.c=$(OBJ_DIR)/%.o) $(ASMSOURCES:%.s=$(OBJ_DIR)/%.o)
-EMULATOR = $(ROOT_DIR)/$(LIB_DIR)/bgbw64/bgb64.exe
+BGB_BIN = $(ROOT_DIR)/$(LIB_DIR)/bgbw64/bgb64.exe
 SAMEBOY_HOME = $(ROOT_DIR)/$(LIB_DIR)/sameboy_winsdl
+SAMEBOY_BIN = $(SAMEBOY_HOME)/sameboy.exe
 SAMEBOY_ARG =
+SAMEBOY_SHADER_FILES := $(wildcard $(SAMEBOY_HOME)/Shaders/*.fsh) $(wildcard $(SAMEBOY_HOME)/Shaders/*.vsh)
 CSC = C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe
 PACKAGE_DIR = package
 PACKAGE_INTERMEDIATE_DIR = $(OUTPUT_DIR)/$(PACKAGE_DIR)_intermediate
@@ -46,23 +42,31 @@ PACKAGE_SRCS = $(PACKAGE_LAUNCHER_SRC) $(PACKAGE_CONFIG_SRC)
 PACKAGE_EXE = $(OUTPUT_DIR)/$(PROJECTNAME).exe
 PACKAGE_EXE_ICON = $(PACKAGE_DIR)/icon.ico
 PACKAGE_BASE_RESOURCES = \
-	/resource:$(SAMEBOY_HOME)/sameboy.exe,sameboy.exe \
+	/resource:$(SAMEBOY_BIN),sameboy.exe \
 	/resource:$(SAMEBOY_HOME)/SDL2.dll,SDL2.dll \
 	/resource:$(SAMEBOY_HOME)/xaudio2_9redist.dll,xaudio2_9redist.dll \
 	/resource:$(SAMEBOY_HOME)/cgb_boot.bin,cgb_boot.bin \
 	/resource:$(SAMEBOY_HOME)/dmg_boot.bin,dmg_boot.bin \
 	/resource:$(ROM),$(ROM_FILE)
-SAMEBOY_SHADER_FILES := $(wildcard $(SAMEBOY_HOME)/Shaders/*.fsh) $(wildcard $(SAMEBOY_HOME)/Shaders/*.vsh)
 PACKAGE_SHADER_RESOURCES = $(foreach f,$(SAMEBOY_SHADER_FILES),/resource:$f,Shaders__$(notdir $f))
 PACKAGE_RESOURCES = $(PACKAGE_BASE_RESOURCES) $(PACKAGE_SHADER_RESOURCES)
 
+# ビルドターゲットごとの設定
+TARGET ?=
+ifeq ($(TARGET), debug) # debug
+    LCCFLAGS += -debug -v -Wf-DDEBUG
+    EMULATOR_BIN = $(BGB_BIN)
+else
+    EMULATOR_BIN = $(SAMEBOY_BIN)
+endif
 
+# 以降はmakeターゲットに関する実装のみ
 all: build run
 
 build: $(ROM) 
 
 run: $(ROM)
-	$(EMULATOR) $(ROM)
+	$(EMULATOR_BIN) $(ROM)
 
 $(BUILD_RUN_BAT): clean
 	@echo "REM Automatically generated from Makefile" > $(BUILD_RUN_BAT)

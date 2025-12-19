@@ -11,8 +11,8 @@
 |名称&リンク|概要|バージョン|
 |-|-|-|
 |[GBDK-2020](https://github.com/gbdk-2020/gbdk-2020)|GB開発キット|4.4.0|
-|[BGB](https://bgb.bircd.org/)|開発用GBエミュレータ|1.6.6|
-|[SameBoy](https://github.com/LIJI32/SameBoy)(winsdl)|exe同梱GBエミュレータ|1.0.2|
+|[BGB](https://bgb.bircd.org/)|デバッグ用GBエミュレータ|1.6.6|
+|[SameBoy](https://github.com/LIJI32/SameBoy)(winsdl)|製品用GBエミュレータ|1.0.2|
 
 ## (おまけ)GBDK-2020のサンプルの動作確認
 - lib/gbdk/examples/gb/compile.bat を実行すると各フォルダ内以下にロム(.gb)が作成されますので参考にどうぞ
