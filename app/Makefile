@@ -29,7 +29,8 @@ SRCDIR = src
 RESDIR = res
 ROOT_DIR = ..
 LIB_DIR = lib/$(OS_TYPE)
-OUTPUT_DIR = output/$(OS_TYPE)
+OUTPUT_ROOT_DIR = output
+OUTPUT_DIR = $(OUTPUT_ROOT_DIR)/$(OS_TYPE)/$(TARGET)
 OBJ_DIR = $(OUTPUT_DIR)/obj
 ROM_DIR = $(OUTPUT_DIR)/rom
 ROM_FILE = $(PROJECTNAME).gb
@@ -75,7 +76,7 @@ LCCFLAGS += -Wm-yc
 LCCFLAGS += -Ires
 
 # ビルドターゲットごとの設定
-TARGET ?=
+TARGET ?= release
 EMULATOR_BIN = $(SAMEBOY_BIN)
 ifeq ($(TARGET), debug)
 	LCCFLAGS += -debug -v -Wf-DDEBUG
@@ -122,7 +123,12 @@ $(ROM): $(OBJS) | $(ROM_DIR)
 clean:
 	rm -rf $(OUTPUT_DIR)
 
-# パッケージ関連ターゲット
+clean_all:
+	rm -rf $(OUTPUT_ROOT_DIR)
+
+# パッケージ関連ターゲット(win環境でのみ有効)
+ifeq ($(OS_TYPE), win)
+
 package: $(PACKAGE_EXE)
 
 $(PACKAGE_EXE): $(ROM) $(PACKAGE_SRCS)
@@ -142,3 +148,5 @@ $(PACKAGE_CONFIG_SRC): Makefile | $(PACKAGE_INTERMEDIATE_DIR)
 
 $(PACKAGE_INTERMEDIATE_DIR):
 	mkdir -p $(PACKAGE_INTERMEDIATE_DIR)
+
+endif
