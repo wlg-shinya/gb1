@@ -81,7 +81,7 @@ LCCFLAGS += -Ires
 # ビルドターゲットごとの設定
 EMULATOR_BIN = $(SAMEBOY_BIN)
 ifeq ($(TARGET), debug)
-	LCCFLAGS += -debug -v -Wf-DDEBUG
+	LCCFLAGS += -debug -v -Wf-DDEBUG -Wm-yS
 	ifeq ($(OS_TYPE), win)
 		EMULATOR_BIN = $(BGB_BIN)
 	endif
