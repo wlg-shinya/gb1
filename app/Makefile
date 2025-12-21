@@ -4,10 +4,10 @@
 #
 
 # 実行環境の判別
-ifeq ($(OS),Windows_NT)
+ifeq ($(OS), Windows_NT)
     OS_TYPE := win
 else
-    ifeq ($(shell uname -s),Darwin)
+    ifeq ($(shell uname -s), Darwin)
         OS_TYPE := mac
     else
         OS_TYPE := linux
@@ -39,7 +39,6 @@ ASMSOURCES = $(foreach dir,$(SRCDIR),$(notdir $(wildcard $(dir)/*.s)))
 OBJS = $(CSOURCES:%.c=$(OBJ_DIR)/%.o) $(ASMSOURCES:%.s=$(OBJ_DIR)/%.o)
 BGB_BIN = $(ROOT_DIR)/$(LIB_DIR)/bgbw64/bgb64.exe
 SAMEBOY_HOME = $(ROOT_DIR)/$(LIB_DIR)/sameboy
-SAMEBOY_BIN = $(SAMEBOY_HOME)/sameboy.exe
 SAMEBOY_ARG =
 SAMEBOY_SHADER_FILES := $(wildcard $(SAMEBOY_HOME)/Shaders/*.fsh) $(wildcard $(SAMEBOY_HOME)/Shaders/*.vsh)
 CSC = C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe
@@ -59,6 +58,15 @@ PACKAGE_BASE_RESOURCES = \
 	/resource:$(ROM),$(ROM_FILE)
 PACKAGE_SHADER_RESOURCES = $(foreach f,$(SAMEBOY_SHADER_FILES),/resource:$f,Shaders__$(notdir $f))
 PACKAGE_RESOURCES = $(PACKAGE_BASE_RESOURCES) $(PACKAGE_SHADER_RESOURCES)
+
+# OSごとに大きく違うパスの定義
+ifeq ($(OS_TYPE), win)
+    SAMEBOY_BIN = $(SAMEBOY_HOME)/sameboy.exe
+else
+    ifeq ($(OS_TYPE), mac)
+        SAMEBOY_BIN = $(SAMEBOY_HOME)/SameBoy.app/Contents/MacOS/SameBoy
+	endif
+endif
 
 # コンパイル追加設定
 ## GB/GBColor両対応
