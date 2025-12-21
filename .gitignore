@@ -1,3 +1,5 @@
+.DS_Store
+
 # エミュレータの実行環境毎に変更される設定
 lib/bgbw64/bgb.ini
 
