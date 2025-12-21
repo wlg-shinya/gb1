@@ -3,6 +3,16 @@
 # subdirectories and places the output in a "obj" subdirectory
 #
 
+# 実行環境の判別
+ifeq ($(OS),Windows_NT)
+    OS_TYPE := win
+else
+    ifeq ($(shell uname -s),Darwin)
+        OS_TYPE := mac
+    else
+        OS_TYPE := linux
+    endif
+endif
 
 # If you move this project you can change the directory 
 # to match your GBDK root directory (ex: GBDK_HOME = "C:/GBDK/"
@@ -18,9 +28,8 @@ PROJECTNAME = gb1
 SRCDIR = src
 RESDIR = res
 ROOT_DIR = ..
-LIB_DIR = lib
-BUILD_RUN_BAT = build_run.bat
-OUTPUT_DIR = output
+LIB_DIR = lib/$(OS_TYPE)
+OUTPUT_DIR = output/$(OS_TYPE)
 OBJ_DIR = $(OUTPUT_DIR)/obj
 ROM_DIR = $(OUTPUT_DIR)/rom
 ROM_FILE = $(PROJECTNAME).gb
@@ -29,13 +38,13 @@ CSOURCES = $(foreach dir,$(SRCDIR),$(notdir $(wildcard $(dir)/*.c))) $(foreach d
 ASMSOURCES = $(foreach dir,$(SRCDIR),$(notdir $(wildcard $(dir)/*.s)))
 OBJS = $(CSOURCES:%.c=$(OBJ_DIR)/%.o) $(ASMSOURCES:%.s=$(OBJ_DIR)/%.o)
 BGB_BIN = $(ROOT_DIR)/$(LIB_DIR)/bgbw64/bgb64.exe
-SAMEBOY_HOME = $(ROOT_DIR)/$(LIB_DIR)/sameboy_winsdl
+SAMEBOY_HOME = $(ROOT_DIR)/$(LIB_DIR)/sameboy
 SAMEBOY_BIN = $(SAMEBOY_HOME)/sameboy.exe
 SAMEBOY_ARG =
 SAMEBOY_SHADER_FILES := $(wildcard $(SAMEBOY_HOME)/Shaders/*.fsh) $(wildcard $(SAMEBOY_HOME)/Shaders/*.vsh)
 CSC = C:/Windows/Microsoft.NET/Framework64/v4.0.30319/csc.exe
-PACKAGE_DIR = package
-PACKAGE_INTERMEDIATE_DIR = $(OUTPUT_DIR)/$(PACKAGE_DIR)_intermediate
+PACKAGE_DIR = package/$(OS_TYPE)
+PACKAGE_INTERMEDIATE_DIR = $(OUTPUT_DIR)/package_intermediate
 PACKAGE_LAUNCHER_SRC = $(PACKAGE_DIR)/Launcher.cs
 PACKAGE_CONFIG_SRC = $(PACKAGE_INTERMEDIATE_DIR)/Config.cs
 PACKAGE_SRCS = $(PACKAGE_LAUNCHER_SRC) $(PACKAGE_CONFIG_SRC)
@@ -73,10 +82,6 @@ build: $(ROM)
 
 run: $(ROM)
 	$(EMULATOR_BIN) $(ROM)
-
-$(BUILD_RUN_BAT): clean
-	@echo "REM Automatically generated from Makefile" > $(BUILD_RUN_BAT)
-	@make -sn | sed 's|/|\\\\|g' | sed 's|mkdir -p|mkdir|g' | grep -v make >> $(BUILD_RUN_BAT)
 
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
