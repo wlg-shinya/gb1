@@ -3,15 +3,19 @@
 # subdirectories and places the output in a "obj" subdirectory
 #
 
+# ビルドターゲット
+TARGET ?= release
+
 # 実行環境の判別
 ifeq ($(OS), Windows_NT)
     OS_TYPE := win
 else
     ifeq ($(shell uname -s), Darwin)
         OS_TYPE := mac
-    else
-        OS_TYPE := linux
     endif
+endif
+ifndef OS_TYPE
+    $(error 非対応のOS($(shell uname -s))です)
 endif
 
 # If you move this project you can change the directory 
@@ -60,7 +64,7 @@ PACKAGE_BASE_RESOURCES = \
 PACKAGE_SHADER_RESOURCES = $(foreach f,$(SAMEBOY_SHADER_FILES),/resource:$f,Shaders__$(notdir $f))
 PACKAGE_RESOURCES = $(PACKAGE_BASE_RESOURCES) $(PACKAGE_SHADER_RESOURCES)
 
-# OSごとに大きく違うパスの定義
+# OSごとに大きく違う定義
 ifeq ($(OS_TYPE), win)
     SAMEBOY_BIN = $(SAMEBOY_HOME)/sameboy.exe
 else
@@ -76,7 +80,6 @@ LCCFLAGS += -Wm-yc
 LCCFLAGS += -Ires
 
 # ビルドターゲットごとの設定
-TARGET ?= release
 EMULATOR_BIN = $(SAMEBOY_BIN)
 ifeq ($(TARGET), debug)
 	LCCFLAGS += -debug -v -Wf-DDEBUG
