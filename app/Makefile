@@ -36,8 +36,9 @@ LIB_DIR = lib/$(OS_TYPE)
 OUTPUT_ROOT_DIR = output
 OUTPUT_DIR = $(OUTPUT_ROOT_DIR)/$(OS_TYPE)/$(TARGET)
 OBJ_DIR = $(OUTPUT_DIR)/obj
+ROM_DIR = $(OUTPUT_DIR)/rom
 ROM_FILE = $(PROJECTNAME).gb
-ROM = $(OBJ_DIR)/$(ROM_FILE)
+ROM = $(ROM_DIR)/$(ROM_FILE)
 CSOURCES = $(foreach dir,$(SRCDIR),$(notdir $(wildcard $(dir)/*.c))) $(foreach dir,$(RESDIR),$(notdir $(wildcard $(dir)/*.c)))
 ASMSOURCES = $(foreach dir,$(SRCDIR),$(notdir $(wildcard $(dir)/*.s)))
 OBJS = $(CSOURCES:%.c=$(OBJ_DIR)/%.o) $(ASMSOURCES:%.s=$(OBJ_DIR)/%.o)
@@ -98,6 +99,9 @@ run: $(ROM)
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
+$(ROM_DIR):
+	mkdir -p $(ROM_DIR)
+
 # Compile .c files in "src/" to .o object files
 $(OBJ_DIR)/%.o: $(SRCDIR)/%.c | $(OBJ_DIR)
 	$(LCC) $(LCCFLAGS) -c -o $@ $<
@@ -116,7 +120,7 @@ $(OBJ_DIR)/%.s: $(SRCDIR)/%.c | $(OBJ_DIR)
 	$(LCC) $(LCCFLAGS) -S -o $@ $<
 
 # Link the compiled object files into a .gb ROM file
-$(ROM): $(OBJS) | $(OBJ_DIR)
+$(ROM): $(OBJS) | $(ROM_DIR)
 	$(LCC) $(LCCFLAGS) -o $(ROM) $(OBJS)
 
 clean:
