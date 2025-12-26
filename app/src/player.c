@@ -8,6 +8,7 @@
 #include "enemy.h"
 #include "fore.h"
 #include "graphics.h"
+#include "kirai.h"
 #include "player.h"
 #include "ui.h"
 
