@@ -13,7 +13,7 @@
 | [SameBoy](https://github.com/LIJI32/SameBoy)        | 開発および製品同梱用 GB エミュレータ | Win,Mac | 1.0.2      |
 | [BGB](https://bgb.bircd.org/)                       | 開発用 GB エミュレータ               | Win     | 1.6.6      |
 
-# スタートアップ(Mac)
+## スタートアップ(Mac)
 
 1. make を利用可能にします
    - ターミナルを開き make --version と入力します
@@ -24,3 +24,4 @@
    ```
    chmod -x [gb1をインストールしたディレクトリパス]/app/clean_build_run.command
    ```
+
