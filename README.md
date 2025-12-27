@@ -24,4 +24,5 @@
    ```
    chmod -x [gb1をインストールしたディレクトリパス]/app/clean_build_run.command
    ```
-
+3. clean_build_run.command を実行します
+   
